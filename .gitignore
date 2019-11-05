@@ -1,7 +1,4 @@
 # This .gitignore file should be placed at the root of your Unity project directory
-#
-# Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
-#
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
@@ -62,3 +59,11 @@ crashlytics-build.properties
 /Black Jack/
 /Pugs vs Platypi/
 /Survival Shooter Mod/
+
+# Ignore everything in Samsara other than the scripts
+!Samsara_FinalProject/
+
+Samsara_FinalProject/*
+!Samsara_FinalProject/Assets/
+Samsara_FinalProject/Assets/*
+!Samsara_FinalProject/Assets/_Scripts/
