@@ -1,6 +1,5 @@
 ### Game Projects
 
-This repository is for game projects I'm currently working on and investing heavy
-amounts of time creating.
+This repository is a personal portfolio website showcasing my past and current work creating games.
+The majority of my experience is in Unity, but I will be adding more content using Unreal Engine soon.
 
-Get ready to learn, explore and have fun.
