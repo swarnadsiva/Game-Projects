@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Playable
+  - Floor
   layers:
   - Default
   - TransparentFX
