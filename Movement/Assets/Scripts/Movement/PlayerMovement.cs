@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour {
+public class PlayerMovement : MonoBehaviour
+{
 
     public float speed = 0.5f;
 
@@ -13,16 +14,25 @@ public class PlayerMovement : MonoBehaviour {
     Vector3 movement;   // reference to movement vector
     float deltaX;       // float to store input Horizontal Axis
     float deltaZ;       // float to store input Vertical Axis
+    Animator anim;      // animator componentn
     #endregion
 
-    // Use this for initialization
-    void Start () {
+    private void Awake()
+    {
         floorLayer = LayerMask.GetMask("Floor");
         myRB = gameObject.GetComponent<Rigidbody>();
-	}
+        anim = GetComponent<Animator>();
+    }
+
+    // Use this for initialization
+    void Start()
+    {
+
+    }
 
     // Fixed Update is called once per frame, consistent frame rate
-    void FixedUpdate() {
+    void FixedUpdate()
+    {
 
         deltaZ = Input.GetAxis("Vertical") * speed;
         deltaX = Input.GetAxis("Horizontal") * speed;
@@ -37,7 +47,9 @@ public class PlayerMovement : MonoBehaviour {
             // allow movement
             MoveFromInput();
 
-            RotateMouse();
+            Turning();
+
+            Animating();
         }
     }
 
@@ -60,26 +72,21 @@ public class PlayerMovement : MonoBehaviour {
         transform.Translate(deltaX, 0, deltaZ);
     }
 
-    private void Rotate(float deltaX)
-    {
-        float current = transform.rotation.eulerAngles.y;
-        transform.rotation = Quaternion.Euler(0, deltaX, 0);
-    }
-
     /// <summary>
     /// Rotates object according to mouse.
     /// 
     /// Based on Unity Survival Shooter tutorial.
     /// </summary>
-    private void RotateMouse()
+    private void Turning()
     {
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         // check raycast from camera to floor
         RaycastHit floorHit;
-    
-        if (Physics.Raycast(camRay, out floorHit, 100f, floorLayer)) {
+
+        if (Physics.Raycast(camRay, out floorHit, 100f, floorLayer))
+        {
             Vector3 playerToMouse = floorHit.point - transform.position;
-   
+
             // along floor plane only
             playerToMouse.y = 0f;
 
@@ -87,5 +94,12 @@ public class PlayerMovement : MonoBehaviour {
             Quaternion rotation = Quaternion.LookRotation(playerToMouse);
             myRB.MoveRotation(rotation);
         }
+    }
+
+    private void Animating()
+    {
+        bool walking = deltaZ != 0f || deltaX != 0f;
+
+        anim.SetBool("IsWalking", walking);
     }
 }
