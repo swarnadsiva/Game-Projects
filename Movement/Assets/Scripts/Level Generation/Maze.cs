@@ -7,44 +7,47 @@ public class Maze
 {
 
     #region Public
-    public readonly int _mazeSize;
-    public readonly int _totalTiles;
-    public readonly List<MazeTile> floorTiles; // TODO figure out access level
-    public readonly List<List<MazeTile>> wallTiles; // TODO figure out access level
+    public readonly int mazeSize = 0;
+    public readonly int tileSize = 0;
+    public readonly int totalTiles = 0;
     #endregion
 
     #region Private
-    private MazeTile[,] tiles;
-    
-
+    private MazeTile[,] _tiles;
+    private HashSet<Vector2Int> _floorTiles;
+    private HashSet<Vector2Int> _wallTiles; 
     private int _wallProbability;
     #endregion
 
     /// <summary>
     /// Creates a new Maze object of the specified size.
     /// </summary>
-    /// <param name="size"></param>
-    public Maze(int size, int wallProbability = 3)
+    /// <param name="mSize"></param>
+    public Maze(int mSize, int tSize, int wallProbability = 3)
     {
 
-        tiles = new MazeTile[size, size];
-        _mazeSize = size;
-        _totalTiles = size * size;
+        _tiles = new MazeTile[mSize, mSize];
         _wallProbability = wallProbability;
+        _floorTiles = new HashSet<Vector2Int>();
+        _wallTiles = new HashSet<Vector2Int>();
 
+        tileSize = tSize;
+        mazeSize = mSize;
+        totalTiles = mSize * mSize;
         Generate();
     }
 
     public void Generate()
     {
+        // ensure these are clear
+        _floorTiles.Clear();
+        _wallTiles.Clear();
+
         // make random tiles
         Randomize();
 
         // ensure tiles are reachable
         MakeReachable();
-
-        // TODO check if there are enclosed spaces
-        CheckEnclosedSpaces();
 
         
     }
@@ -54,14 +57,14 @@ public class Maze
         MazeTile newTile;
         int rand;
 
-        for (int x = 0; x < _mazeSize; x++)
+        for (int x = 0; x < mazeSize; x++)
         {
-            for (int y = 0; y < _mazeSize; y++)
+            for (int y = 0; y < mazeSize; y++)
             {
                 HashSet<MazeTile.AttributeType> attributes = new HashSet<MazeTile.AttributeType>();
 
                 // check if edge 
-                if (x == 0 || x == _mazeSize - 1 || y == 0 || y == _mazeSize - 1)
+                if (x == 0 || x == mazeSize - 1 || y == 0 || y == mazeSize - 1)
                 {
                     attributes.Add(MazeTile.AttributeType.Edge);
                 }
@@ -78,7 +81,7 @@ public class Maze
                 }
 
                 newTile = new MazeTile(x, y, attributes);
-                tiles[x,y] = newTile;
+                _tiles[x,y] = newTile;
             }
         }
     }
@@ -90,65 +93,70 @@ public class Maze
         HashSet<Vector2Int> traversedTilePos = new HashSet<Vector2Int>();
 
         MazeTile current;
+        MazeTile nearestWall;
 
         // iterate through each MazeTile
-        for (int x = 0; x < _mazeSize; x++)
+        for (int x = 0; x < mazeSize; x++)
         {
-            for (int y = 0; y < _mazeSize; y++)
+            for (int y = 0; y < mazeSize; y++)
             {
-                current = tiles[x, y];
+                current = _tiles[x, y];
 
                 // only make floor tiles reachable
                 if (current._attributes.Contains(MazeTile.AttributeType.Floor))
                 {
-                    // add current to traversed
+                    // add current to traversed (and to floorTiles)
                     traversedTilePos.Add(current.position);
+                    _floorTiles.Add(current.position);
 
                     // get surrounding tiles
-                    surroundingPos = current.GetUntraversedSurroundingPositions(_mazeSize, traversedTilePos);
+                    surroundingPos = current.GetUntraversedSurroundingPositions(mazeSize, traversedTilePos);
                     surroundingTiles.Clear();
 
                     foreach (Vector2Int pos in surroundingPos)
                     {
-                        surroundingTiles.Add(tiles[pos.x, pos.y]);
+                        surroundingTiles.Add(_tiles[pos.x, pos.y]);
                     }
 
                     Vector2Int nearestWallPos;
                     if (!current.IsReachable(surroundingTiles, out nearestWallPos))
                     {
                         // change nearest wall to floor
-                        tiles[nearestWallPos.x, nearestWallPos.y].ChangeToFloor();
+                        nearestWall = _tiles[nearestWallPos.x, nearestWallPos.y];
+                        nearestWall.ChangeToFloor();
+
+                        // remove from wall tiles
+                        _wallTiles.Remove(nearestWall.position);
                     }
+                } else if (current._attributes.Contains(MazeTile.AttributeType.Wall))
+                {
+                    // add to wall tiles
+                    _wallTiles.Add(current.position);
                 }
             }
         }
     }
 
-    private void CheckEnclosedSpaces()
+    public HashSet<Vector2Int> GetFloorTiles()
     {
-
+        return _floorTiles;
     }
 
-    private List<MazeTile> GetFloorTiles()
+    public HashSet<Vector2Int> GetWallTiles()
     {
-        return null;
-    }
-
-    private List<List<MazeTile>> GetWallTileSections()
-    {
-        return null;
+        return _wallTiles;
     }
 
 
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();
-        Debug.LogFormat("totalTiles {0}", _totalTiles);
-        for (int x = 0; x < _mazeSize; x++)
+        Debug.LogFormat("totalTiles {0}", totalTiles);
+        for (int x = 0; x < mazeSize; x++)
         {
-            for (int y = 0; y < _mazeSize; y++)
+            for (int y = 0; y < mazeSize; y++)
             {
-                sb.Append(tiles[x, y].ToString());
+                sb.Append(_tiles[x, y].ToString());
                 sb.Append("  ");
             }
             sb.Append("\n");

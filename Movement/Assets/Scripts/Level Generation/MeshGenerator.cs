@@ -4,67 +4,92 @@ using UnityEngine;
 
 public class MeshGenerator
 {
+    private Maze _maze;
+    private int _vertexGridSize;
+    private int _wallHeight;
+
     private List<Vector2> _uvs;
     private List<Vector3> _vertices;
     private List<Vector3> _normals;
     private List<int> _triangles;
+
     private bool _debug;
+    private GameObject _testVertex;
+  
 
     public readonly Mesh myMesh;
 
     /// <summary>
     /// Default constructor. Initializes mesh and lists.
     /// </summary>
-    public MeshGenerator(bool debug = false)
+    public MeshGenerator(int wallHeight, GameObject testVertex = null, bool debug = false)
     {
         myMesh = new Mesh();
         _uvs = new List<Vector2>();
         _vertices = new List<Vector3>();
         _normals = new List<Vector3>();
         _triangles = new List<int>();
+        _wallHeight = wallHeight;
 
         _debug = debug;
+        _testVertex = testVertex;
     }
 
-    public void Generate(Maze newMaze)
+    public void Generate(Maze maze)
     {
-        // Do stuff
-        // testing only
+        _maze = maze;
+
+        // add 1 to get the correct number of vertices
+        // to ensure a grid of mazeSize
+        _vertexGridSize = maze.mazeSize + 1;
+
         if (_debug)
         {
-            Debug.Log(newMaze.ToString());
+            Debug.Log(maze.ToString());
         }
 
-        // use maze
-
+        // use maze to make vertices
+        // TODO 
+        MakeVertices();
     }
 
-    ///// <summary>
-    ///// Generates the vertices for the floor mesh.
-    ///// </summary>
-    ///// <returns>The vertex count.</returns>
-    //int MakeVertices()
-    //{
-    //    Vector3 pos;
+    /// <summary>
+    /// Generates the vertices for the floor mesh.
+    /// </summary>
+    /// <returns>The vertex count.</returns>
+    int MakeVertices()
+    {
+        Vector3 pos;
+        HashSet<Vector2Int> wallTiles = _maze.GetWallTiles();
 
-    //    // create vertices for entire grid
-    //    for (int z = 0; z < gridSize; z += tileSize)
-    //    {
-    //        for (int x = 0; x < gridSize; x += tileSize)
-    //        {
+        // create vertices for entire grid
+        for (int z = 0; z < _vertexGridSize; z++)
+        {
+            for (int x = 0; x < _vertexGridSize; x++)
+            {
+                // TODO fix to properly make vertices
+                pos = new Vector3(x * _maze.tileSize, 0, z * _maze.tileSize);
+                _vertices.Add(pos);
+                if (_debug)
+                {
+                    Object.Instantiate(_testVertex, pos, Quaternion.identity);
+                }
 
-    //            pos = new Vector3(x, 0, z);
-    //            vertices.Add(pos);
-    //            if (debug)
-    //            {
-    //                Instantiate(testVertex, pos, Quaternion.identity);
-    //            }
-    //        }
-    //    }
+                // add wall vertices TODO fix to properly make vertices AROUND the wallTile coordinate
+                if (wallTiles.Contains(new Vector2Int(x, z)))
+                {
+                    pos = new Vector3(x * _maze.tileSize, _wallHeight, z * _maze.tileSize);
+                    _vertices.Add(pos);
+                    if (_debug)
+                    {
+                        Object.Instantiate(_testVertex, pos, Quaternion.identity);
+                    }
+                }
+            }
+        }
 
-    //    myMesh.vertices = vertices.ToArray();
-    //    return vertices.Count;
-    //}
+        return _vertices.Count;
+    }
 
     ///// <summary>
     ///// Generates the triangles of the floor mesh.

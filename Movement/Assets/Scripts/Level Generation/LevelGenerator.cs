@@ -20,9 +20,9 @@ public class LevelGenerator : MonoBehaviour
     void Awake()
     {
 
-        Maze maze = new Maze(levelSize);
+        Maze maze = new Maze(levelSize, tileDimension);
 
-        MeshGenerator mgFloor = new MeshGenerator(debug);
+        MeshGenerator mgFloor = new MeshGenerator(wallHeight, testVertex, debug);
         mgFloor.Generate(maze);
 
         if (debug)
