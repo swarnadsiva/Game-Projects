@@ -9,63 +9,49 @@ public class LevelGenerator : MonoBehaviour
     public int tileDimension = 5;
     public int wallHeight = 5;
     public bool debug = true;
-    public GameObject testVertex;
+    public GameObject testVertexFloor;
+    public GameObject testVertexWall;
+    public GameObject floorPrefab;
+    public GameObject wallPrefab;
 
-    MeshFilter mf;
-    MeshCollider mc;
-    Mesh myMesh;
-    int gridSize;
+
+    private int gridSize;
+    private GameObject floor;
+    private GameObject wall;
 
     // Start is called before the first frame update
     void Awake()
     {
 
-        Maze maze = new Maze(levelSize, tileDimension);
+        // set up floor and wall objects
+        floor = Instantiate(floorPrefab, transform.position, Quaternion.identity);
+        wall = Instantiate(wallPrefab, transform.position, Quaternion.identity);
 
-        MeshGenerator mgFloor = new MeshGenerator(wallHeight, testVertex, debug);
-        mgFloor.Generate(maze);
+        // make a random maze
+        Maze maze = new Maze(levelSize, tileDimension, wallHeight);
 
+        // make floor mesh
+        MakeMesh(maze.GetFloorTiles(), floor, testVertexFloor);
+
+        // make wall mesh
+        MakeMesh(maze.GetWallTiles(), wall, testVertexWall);
+        
+       
         if (debug)
         {
+            Debug.Log(maze.ToString());
             Debug.LogFormat("elapsed time: {0} seconds", Time.fixedTime);
         }
-        //// create components on gameobject
-        //mf = gameObject.GetComponent<MeshFilter>();
-        //mc = gameObject.GetComponent<MeshCollider>();
 
-        ////gridSize = tileDimension * levelSize;
-
-        //mf.mesh = mgFloor.myMesh;
-        //mc.sharedMesh = mgFloor.myMesh;
-
-        //MakeFloor();
     }
 
-    ///// <summary>
-    ///// Generates the floor portion of the level.
-    ///// </summary>
-    //void MakeFloor()
-    //{
+    private void MakeMesh(HashSet<MazeTile> mazeTiles, GameObject gameObject, GameObject prefab = null)
+    {
+        MeshGenerator mg = new MeshGenerator(prefab, debug);
+        mg.Generate(mazeTiles);
 
-    //    // create empty floor gameobject in scene
-    //    myMesh = new Mesh();
-    //    mf.mesh = myMesh;
-    //    mc.sharedMesh = myMesh;
-
-    //    // make vertices
-    //    int numVertices = MakeVertices();
-
-
-    //    // make triangles
-    //    MakeTriangles(numVertices);
-
-    //    // make UVs
-    //    MakeUVs(numVertices);
-
-    //    // make normals
-    //    MakeNormals(numVertices);
-
-    //}
-
+        gameObject.GetComponent<MeshFilter>().mesh = mg.myMesh;
+        gameObject.GetComponent<MeshCollider>().sharedMesh = mg.myMesh;
+    }
 
 }

@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class MeshGenerator
 {
-    private Maze _maze;
-    private int _vertexGridSize;
-    private int _wallHeight;
+    private MazeTile[] _mazeTiles = { };
 
-    private List<Vector2> _uvs;
-    private List<Vector3> _vertices;
+
+    private HashSet<Vector2> _uvs;
+    private HashSet<Vector3> _vertices;
     private List<Vector3> _normals;
     private List<int> _triangles;
 
@@ -22,123 +21,81 @@ public class MeshGenerator
     /// <summary>
     /// Default constructor. Initializes mesh and lists.
     /// </summary>
-    public MeshGenerator(int wallHeight, GameObject testVertex = null, bool debug = false)
+    public MeshGenerator( GameObject testVertex = null, bool debug = false)
     {
         myMesh = new Mesh();
-        _uvs = new List<Vector2>();
-        _vertices = new List<Vector3>();
+        _uvs = new HashSet<Vector2>();
+        _vertices = new HashSet<Vector3>();
         _normals = new List<Vector3>();
         _triangles = new List<int>();
-        _wallHeight = wallHeight;
 
         _debug = debug;
         _testVertex = testVertex;
     }
 
-    public void Generate(Maze maze)
+    public void Generate(HashSet<MazeTile> mazeTiles)
     {
-        _maze = maze;
-
-        // add 1 to get the correct number of vertices
-        // to ensure a grid of mazeSize
-        _vertexGridSize = maze.mazeSize + 1;
-
-        if (_debug)
-        {
-            Debug.Log(maze.ToString());
-        }
+        int size = mazeTiles.Count;
+        _mazeTiles = new MazeTile[size];
+        mazeTiles.CopyTo(_mazeTiles);
 
         // use maze to make vertices
-        // TODO 
         MakeVertices();
+
+        MakeTriangles();
+
     }
 
     /// <summary>
     /// Generates the vertices for the floor mesh.
     /// </summary>
     /// <returns>The vertex count.</returns>
-    int MakeVertices()
+    void MakeVertices()
     {
-        Vector3 pos;
-        HashSet<Vector2Int> wallTiles = _maze.GetWallTiles();
 
         // create vertices for entire grid
-        for (int z = 0; z < _vertexGridSize; z++)
+        for (int i = 0; i < _mazeTiles.Length; i++)
         {
-            for (int x = 0; x < _vertexGridSize; x++)
+            foreach (Vector3 vertex in _mazeTiles[i]._vertexPositions3D) 
             {
-                // TODO fix to properly make vertices
-                pos = new Vector3(x * _maze.tileSize, 0, z * _maze.tileSize);
-                _vertices.Add(pos);
-                if (_debug)
+                if (_debug && !_vertices.Contains(vertex))
                 {
-                    Object.Instantiate(_testVertex, pos, Quaternion.identity);
+                    Object.Instantiate(_testVertex, vertex, Quaternion.identity);
                 }
-
-                // add wall vertices TODO fix to properly make vertices AROUND the wallTile coordinate
-                if (wallTiles.Contains(new Vector2Int(x, z)))
-                {
-                    pos = new Vector3(x * _maze.tileSize, _wallHeight, z * _maze.tileSize);
-                    _vertices.Add(pos);
-                    if (_debug)
-                    {
-                        Object.Instantiate(_testVertex, pos, Quaternion.identity);
-                    }
-                }
+                _vertices.Add(vertex); // only adds if it doesn't already contain it
             }
         }
 
-        return _vertices.Count;
+        Vector3[] tempV = new Vector3[_vertices.Count];
+        _vertices.CopyTo(tempV);
+
+        myMesh.vertices = tempV;
     }
 
-    ///// <summary>
-    ///// Generates the triangles of the floor mesh.
-    ///// </summary>
-    ///// <param name="numVertices">The number of vertices in the mesh.</param>
-    //void MakeTriangles(int numVertices)
-    //{
-    //    int topRight;
-    //    int topLeft;
-    //    int bottomRight;
-    //    int bottomLeft;
+    /// <summary>
+    /// Generates the triangles of the mesh.
+    /// </summary>
+    void MakeTriangles()
+    {
+        for (int i = 0; i < _mazeTiles.Length; i++)
+        {
+            List<int[]> tileTriangle = _mazeTiles[i]._triangleIndices;
 
-    //    //   ^
-    //    //   |
-    //    //   |
-    //    // z |_______>
-    //    //      x
-    //    // 
-    //    // points are ordered from 0, 1, 2, ... in x direction,
-    //    // then go up at gridDimension, gridDimension + 1, ...
+            for (int j = 0; j < tileTriangle.Count; j++)
+            {
+                int[] triangle = tileTriangle[j];
+                _triangles.Add(triangle[0]);
+                _triangles.Add(triangle[1]);
+                _triangles.Add(triangle[2]);
+            }
+        }
 
-    //    for (int i = gridDimension; i < numVertices; i += gridDimension) // go through the rows in the grid 
-    //    {
-    //        for (int j = i; j < i + gridDimension - 1; j++) // go through the columns in the grid
-    //        {
-    //            topLeft = j;
-    //            topRight = j + 1;
-    //            bottomLeft = j - gridDimension;
-    //            bottomRight = topRight - gridDimension;
-
-    //            // add first triangle
-    //            triangles.Add(bottomLeft);
-    //            triangles.Add(topLeft);
-    //            triangles.Add(bottomRight);
-
-    //            // add second triangle
-    //            triangles.Add(topLeft);
-    //            triangles.Add(topRight);
-    //            triangles.Add(bottomRight);
-    //            if (debug)
-    //            {
-    //                Debug.LogFormat("topLeft: {0} topRight: {1} bottomLeft: {2} bottomRight: {3}", topLeft, topRight, bottomLeft, bottomRight);
-    //            }
-    //        }
-    //    }
-
-    //    myMesh.triangles = triangles.ToArray();
-
-    //}
+        myMesh.triangles = _triangles.ToArray();
+        if (_debug)
+        {
+            Debug.LogFormat("triangle vertices in mesh {0}", myMesh.triangles.Length);
+        }
+    }
 
     ///// <summary>
     ///// Generates the correct UV coordinates to map the texture of the floor accordingly.

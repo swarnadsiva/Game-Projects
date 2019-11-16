@@ -8,18 +8,100 @@ public class MazeTile
     #region Public
     public enum AttributeType { Wall, Floor, Edge };
     public HashSet<AttributeType> _attributes;
-    public readonly Vector2Int position;
+    public readonly Vector2Int position; // this is the BOTTOM LEFT coordinate of the tile on a grid
+    public HashSet<Vector3> _vertexPositions3D;
+    public List<int[]> _triangleIndices;
     #endregion
+
+    private readonly int _tileSize;
+    private readonly int _wallHeight;
 
     /// <summary>
     /// Creates a new MazeTile object with a set position.
     /// </summary>
     /// <param name="x">x-coordinate value.</param>
     /// <param name="y">y-coordinate value.</param>
-    public MazeTile(int x, int y, HashSet<AttributeType> attributes)
+    public MazeTile(int x, int y, HashSet<AttributeType> attributes, int tileSize, int wallHeight = 0)
     {
         position = new Vector2Int(x, y);
         _attributes = attributes;
+        _vertexPositions3D = new HashSet<Vector3>();
+        _triangleIndices = new List<int[]>();
+        _tileSize = tileSize;
+        _wallHeight = wallHeight;
+
+        Calculate3DVertexPositions();
+        CalculateTriangles();
+    }
+
+    /// <summary>
+    /// Calculates and stores the 3D vertex positions in world space of the maze tile.
+    /// </summary>
+    /// <param name="tileSize">Tile dimension in world space.</param>
+    /// <param name="wallHeight">Wall height in world space.</param>
+    private void Calculate3DVertexPositions()
+    {
+        _vertexPositions3D.Clear();
+
+        //   ^
+        //   |
+        //   |
+        // z |_______>
+        //      x
+        // 
+        // points are ordered from 0, 1, 2, ... in x direction,
+        // then go up by tileSize, and over by tileSize ...
+
+        int bottom = position.y * _tileSize;
+        int top = (position.y + 1) * _tileSize;
+        int left = position.x * _tileSize;
+        int right = (position.x + 1) * _tileSize;
+
+        // z-axis is vertical, x-axis is horizontal in the world space
+        // if floor, get four points from floor
+        // ORDER OF ADD OPERATIONS IS IMPORTANT
+        
+        _vertexPositions3D.Add(new Vector3(left, 0, bottom)); // bottom left 0
+        _vertexPositions3D.Add(new Vector3(left, 0, top)); // top left 1
+        _vertexPositions3D.Add(new Vector3(right, 0, top)); // top right 2
+        _vertexPositions3D.Add(new Vector3(right, 0, bottom)); // bottom right 3 
+
+        // if wall, get four additional points with wallHeight
+        if (_attributes.Contains(AttributeType.Wall))
+        {
+            _vertexPositions3D.Add(new Vector3(left, _wallHeight, bottom)); // bottom left 4
+            _vertexPositions3D.Add(new Vector3(left, _wallHeight, top)); // top left 5
+            _vertexPositions3D.Add(new Vector3(right, _wallHeight, top)); // top right 6
+            _vertexPositions3D.Add(new Vector3(right, _wallHeight, bottom)); // bottom right 7
+        }
+    }
+
+
+    private void CalculateTriangles()
+    {
+        // add all the triangles for this tile
+        _triangleIndices.Clear();
+
+        if (_attributes.Contains(AttributeType.Floor))
+        {
+            _triangleIndices.Add(new int[] { 0, 1, 3 }); // bottom left triangle
+            _triangleIndices.Add(new int[] { 1, 2, 3 }); // top right triangle
+        }else if (_attributes.Contains(AttributeType.Wall))
+        {
+            
+            _triangleIndices.Add(new int[] { 4, 5, 7 }); // bottom left triangle
+            _triangleIndices.Add(new int[] { 5, 6, 7 }); // top right triangle
+
+            // connect top vertices to bottom vertices
+            _triangleIndices.Add(new int[] { 0, 4, 3 }); // bottom left triangle
+            _triangleIndices.Add(new int[] { 4, 7, 3 }); // top right triangle
+            _triangleIndices.Add(new int[] { 3, 7, 2 }); // bottom left triangle
+            _triangleIndices.Add(new int[] { 7, 6, 2 }); // top right triangle
+            _triangleIndices.Add(new int[] { 2, 6, 1 }); // bottom left triangle
+            _triangleIndices.Add(new int[] { 6, 5, 1 }); // top right triangle
+            _triangleIndices.Add(new int[] { 1, 5, 0 }); // bottom left triangle
+            _triangleIndices.Add(new int[] { 5, 4, 0 }); // top right triangle
+        }
     }
 
     /// <summary>
@@ -71,7 +153,7 @@ public class MazeTile
             {
                 reachable = true;
             }
-            else // this is a wall
+            else if (surrounding[i]._attributes.Contains(AttributeType.Wall)) // this is a wall
             {
                 // only set nearest wall if it has not already been set
                 if (nearestWall == position)
@@ -150,6 +232,15 @@ public class MazeTile
         _attributes.Remove(AttributeType.Wall);
         _attributes.Add(AttributeType.Floor);
 
+        Calculate3DVertexPositions();
+        CalculateTriangles();
     }
 
+  
+    public void FindNeighbors(HashSet<MazeTile> section, List<MazeTile> remainingTiles)
+    {
+        // find tiles next to this in remaining
+        // TODO 
+        // remainingTiles.Find(x => (x.position.Equals);
+    }
 }
