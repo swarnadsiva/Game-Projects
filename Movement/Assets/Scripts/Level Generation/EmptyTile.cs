@@ -7,7 +7,6 @@ public class EmptyTile : AbstractTile
 
     public EmptyTile(int x, int y) : base(x, y)
     {
-
     }
 
     public override bool IsEmpty()

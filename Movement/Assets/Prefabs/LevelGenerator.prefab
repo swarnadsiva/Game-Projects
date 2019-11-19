@@ -106,15 +106,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5af088c38c76d347b76ef41ffd73461, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelSize: 11
+  width: 10
+  height: 5
+  borderThickness: 1
   tileDimension: 5
   wallHeight: 5
   debug: 1
-  testVertexFloor: {fileID: 2957914502162250395, guid: fb86a22e91b12544e80027e6a90a15c7,
+  meshPrefab: {fileID: 4518725893259028602, guid: c6348720bebc05d4eb157e57fc3e0e9b,
     type: 3}
-  testVertexWall: {fileID: 586874796815966719, guid: 44eea578a60b1f44a98fd7e5dcdd5cc5,
-    type: 3}
-  floorPrefab: {fileID: 8710780619995374680, guid: 3f24928c4f0e5d1469f1142b3b74db2a,
-    type: 3}
-  wallPrefab: {fileID: 4518725893259028602, guid: c6348720bebc05d4eb157e57fc3e0e9b,
-    type: 3}
+  floorMaterial: {fileID: 2100000, guid: a16fcf23135586b4b84bb4df87818ecf, type: 2}
+  wallMaterials:
+  - {fileID: 2100000, guid: 148dbc7489a35a144b762de64c93d07d, type: 2}
+  - {fileID: 2100000, guid: 16a65439ad3d13f4a83415b88b7029d3, type: 2}

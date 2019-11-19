@@ -16,33 +16,27 @@ public class LevelGenerator : MonoBehaviour
     public int wallHeight = 5;
     public bool debug = true;
 
-    public GameObject testVertexFloor;
-    public GameObject testVertexWall;
-    public GameObject floorPrefab;
-    public GameObject wallPrefab;
+    public GameObject meshPrefab; // Gameobject that will hold the generated meshes
+    public Material floorMaterial;
+    public Material[] wallMaterials;
 
-
-    public bool loaded = false;
-    public bool start = true;
-
-    private int gridSize;
-    private GameObject floor;
-    private GameObject wall;
+    
+    public bool Loaded { get; }
+    private bool _loaded = false;
 
     // Start is called before the first frame update
     void Awake()
     {
 
         // make a random maze
-        Maze maze = new Maze(width, height, borderThickness, tileDimension, wallHeight);
+        Maze maze = new Maze(width, height, borderThickness, tileDimension, wallHeight, floorMaterial, wallMaterials);
 
         GameObject newObject;
         Mesh newMesh;
         foreach (MeshSection m in maze.MeshSections)
         {
-
             newMesh = new Mesh();
-            newMesh.name = "test mesh";
+            newMesh.name = m.Name;
             newMesh.vertices = m.Vertices.ToArray();
             newMesh.triangles = m.Triangles.ToArray();
             newMesh.uv = m.Uvs.ToArray();
@@ -50,12 +44,13 @@ public class LevelGenerator : MonoBehaviour
 
             newMesh.Optimize();
 
-            newObject = Instantiate(floorPrefab, transform.position, Quaternion.identity);
+            newObject = Instantiate(meshPrefab, transform.position, Quaternion.identity);
             newObject.GetComponent<MeshFilter>().mesh = newMesh;
             newObject.GetComponent<MeshCollider>().sharedMesh = newMesh;
+            newObject.GetComponent<MeshRenderer>().material = m.MyMaterial;
         }
 
-        loaded = true;
+        _loaded = true;
 
         if (debug)
         {
