@@ -57,7 +57,8 @@ public class MeshSection
             // add triangles starting from left facing to front, to right, to back facing
 
             // if no left neighbor, add the left triangles
-            if (newTile.GetNeighborAt(AbstractTile.Position.Left) == null)
+            AbstractTile neighbor = newTile.GetNeighborAt(AbstractTile.Position.Left);
+            if (neighbor == null || neighbor is FloorTile)
             {
                 // LEFT quad vertices
                 start = Vertices.Count;
@@ -72,7 +73,8 @@ public class MeshSection
             }
 
             // if no top neighbor, add the front/top triangles
-            if (newTile.GetNeighborAt(AbstractTile.Position.Top) == null)
+            neighbor = newTile.GetNeighborAt(AbstractTile.Position.Top);
+            if (neighbor == null || neighbor is FloorTile)
             {
                 // FRONT quad vertices
                 start = Vertices.Count;
@@ -87,7 +89,8 @@ public class MeshSection
             }
 
             // if no right neighbor, add the right triangles
-            if (newTile.GetNeighborAt(AbstractTile.Position.Right) == null)
+            neighbor = newTile.GetNeighborAt(AbstractTile.Position.Right);
+            if (neighbor == null || neighbor is FloorTile)
             {
                 // RIGHT quad vertices
                 start = Vertices.Count;
@@ -102,7 +105,8 @@ public class MeshSection
             }
 
             // if no back neighbor, add the back/bottom triangles
-            if (newTile.GetNeighborAt(AbstractTile.Position.Bottom) == null)
+            neighbor = newTile.GetNeighborAt(AbstractTile.Position.Bottom);
+            if (neighbor == null || neighbor is FloorTile)
             {
                 // BACK quad vertices
                 start = Vertices.Count;

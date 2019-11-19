@@ -17,7 +17,7 @@ public static class PlayableCharacterUtilities
 
     private static void FindPlayers()
     {
-        characters = MonoBehaviour.FindObjectsOfType<Playable>();
+        characters = Object.FindObjectsOfType<Playable>();
     }
 
     private static void SetCurrentPlayer()

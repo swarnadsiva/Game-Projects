@@ -6,6 +6,8 @@ public class FloorTile : AbstractTile
 {
     #region Private
     private Dictionary<Position, FloorTile> _floorNeighbors; // dictionary to keep track of neighboring floor tiles (these will be one step away)
+    private const int RANDOM_CHANCE = 5;
+    private const int NUM_POSITIONS = 4;
     #endregion
 
     #region Public
@@ -37,7 +39,7 @@ public class FloorTile : AbstractTile
     public override void DepthFirstTraversal<T>(MeshSection myMesh, Maze maze = null)
     {
         // pick random floor position
-        int randPos = Random.Range((int)Position.Top, (int)Position.Right + 1);
+        int randPos = Random.Range(0, NUM_POSITIONS);
         Position next = (Position)randPos;
 
         // set is visited to true
@@ -46,42 +48,81 @@ public class FloorTile : AbstractTile
         // add tile to mesh
         myMesh.AddTile(this);
 
-        for (int i = 0; i < 4; i++) // iterate through all positions
+        for (int i = 0; i < NUM_POSITIONS; i++) // iterate through all positions
         {
             // get the next floor neighbor
             FloorTile floorNeighbor = GetFloorNeighborAt(next);
             if (floorNeighbor != null && !floorNeighbor.IsVisited)
             {
+                // make a path to this floor tile
+
                 // get tile in between to connect the neighboring floor mesh
                 // determine which side neighbor to get
                 int deltaX = floorNeighbor.X - X;
                 int deltaY = floorNeighbor.Y - Y;
-                (int x, int y) = GetImmediateNeighbor(deltaX, deltaY, this);
+                AbstractTile neighbor = GetImmediateNeighbor(deltaX, deltaY);
+                if (neighbor != null && neighbor.IsEmpty())
+                {
+                    // only create a new floor tile if there isn't already one
+                    CreateNewFloorTile(neighbor.X, neighbor.Y, maze, myMesh);
+                }
 
-                // create a new visited floor tile at this position
-                AbstractTile newFloor = new FloorTile(x, y, true);
-
-                // add the tile to the maze
-                maze.SetTileAt(x, y, newFloor);
-
-                // set newFloor neighbors
-                newFloor.SetNeighborsFromMaze(maze);
-
-                // add the tile to the mesh
-                myMesh.AddTile(newFloor);
+                // add random neighbor as part of the mesh to add variety
+                if (Random.Range(0, RANDOM_CHANCE) == 1)
+                {
+                    // get a neighboring empty floor 
+                    AddRandomFloorTile(maze, myMesh);
+                }
 
                 // call DFT with neighbor as current and pass in the maze
                 floorNeighbor.DepthFirstTraversal<T>(myMesh, maze);
             }
 
-            // TODO add random neighbor as part of the mesh to add variety
-
             // go to next neighbor 
-            next = (Position)(((int)next + 1) % NumFloorNeighbors);
+            int nextNum = ((int)next + 1) % NUM_POSITIONS;
+            next = (Position)nextNum;
         }
     }
 
-    private (int x, int y) GetImmediateNeighbor(int deltaX, int deltaY, FloorTile current)
+    private void CreateNewFloorTile(int x, int y, Maze maze, MeshSection myMesh)
+    {
+        // create a new visited floor tile at this position
+        AbstractTile newFloor = new FloorTile(x, y, true);
+
+        // set newFloor neighbors
+        newFloor.SetNeighborsFromMaze(maze);
+
+        // updte this new floor's neighbors 
+        newFloor.UpdateNeighbors(maze.myWidth, maze.myHeight);
+
+        // add the tile to the maze
+        maze.SetTileAt(x, y, newFloor);
+
+        // add the tile to the mesh
+        myMesh.AddTile(newFloor);
+    }
+
+    private void AddRandomFloorTile(Maze maze, MeshSection myMesh)
+    {
+        Position p = Position.Top;
+        bool done = false;
+        while (!done && p <= Position.Right)
+        {
+            // get the next neighbor
+            AbstractTile neighbor = GetNeighborAt(p);
+            if (neighbor != null && neighbor.IsEmpty())
+            {
+                // call DFT with neighbor as current
+                CreateNewFloorTile(neighbor.X, neighbor.Y, maze, myMesh);
+                done = true;
+            } else
+            {
+                p++;
+            }
+        }
+    }
+
+    private AbstractTile GetImmediateNeighbor(int deltaX, int deltaY)
     {
         AbstractTile immediateNeighbor;
         Position pos;
@@ -109,12 +150,15 @@ public class FloorTile : AbstractTile
         else
         {
             Utilities.LogException("Neighboring tile is not in a correct spot!");
-            immediateNeighbor = null;
-            return (-1, -1);
+            return null;
         }
 
         immediateNeighbor = GetNeighborAt(pos);
-        return (immediateNeighbor.X, immediateNeighbor.Y);
+        if (immediateNeighbor is WallTile)
+        {
+            Debug.LogFormat("Immediate tile to {0} ({1}, {2}) is a wall tile!", pos.ToString(), X, Y);
+        }
+        return immediateNeighbor;
     }
 
     public override string ToString()

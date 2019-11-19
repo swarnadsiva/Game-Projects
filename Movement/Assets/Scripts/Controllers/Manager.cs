@@ -5,7 +5,7 @@ public abstract class Manager : MonoBehaviour {
     public static Manager instance = null;
 
     // Use this for initialization
-    void Awake()
+    protected virtual void Awake()
     {
         if (instance == null)
         {

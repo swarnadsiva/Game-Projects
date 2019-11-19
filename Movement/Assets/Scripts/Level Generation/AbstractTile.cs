@@ -9,7 +9,6 @@ public abstract class AbstractTile
     public int X { get; }
     public int Y { get; }
     public bool IsVisited { get => _isVisited; }
-    public int NumNeighbors { get => _neighbors.Count; }
 
     protected Dictionary<Position, AbstractTile> _neighbors;
     protected bool _isVisited;
@@ -48,12 +47,40 @@ public abstract class AbstractTile
 
         if (Y > 0)
         {
-            AddNeighbor(Position.Top, maze.GetTileAt(X, Y - 1));
+            AddNeighbor(Position.Bottom, maze.GetTileAt(X, Y - 1));
         }
 
         if (Y < maze.myHeight - 1)
         {
-            AddNeighbor(Position.Bottom, maze.GetTileAt(X, Y + 1));
+            AddNeighbor(Position.Top, maze.GetTileAt(X, Y + 1));
+        }
+    }
+
+    public void UpdateNeighbors(int mazeWidth, int mazeHeight)
+    {
+        // update all neighbors with this position
+        if (X > 0)
+        {
+            // update left neighbor
+            GetNeighborAt(Position.Left).AddNeighbor(Position.Right, this);
+        }
+
+        if (X < mazeWidth - 1)
+        {
+            // update right neighbor
+            GetNeighborAt(Position.Right).AddNeighbor(Position.Left, this);
+        }
+
+        if (Y > 0)
+        {
+            // update bottom neighbor
+            GetNeighborAt(Position.Bottom).AddNeighbor(Position.Top, this);
+        }
+
+        if (Y < mazeHeight - 1)
+        {
+            // update top neighbor
+            GetNeighborAt(Position.Top).AddNeighbor(Position.Bottom, this);
         }
     }
 
