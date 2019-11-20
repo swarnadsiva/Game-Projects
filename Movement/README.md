@@ -44,10 +44,13 @@ I am planning on creating a playable PvP option where players can compete agains
 ### Everything Else
 Like I said above... this game's still a-cookin'! Lots more features will be coming soon, like intelligent enemy AI, portals to leave the maze, keys to open the portals, and more.
 
-*Written with [StackEdit](https://stackedit.io/).*
 
 #### Footnotes
 ---
-<a name="#1">1.</a> I'm going through this book, [Game Programming Patterns](https://gameprogrammingpatterns.com/) by Robert Nystrom, and it's changing my game programming life.
-<a name="#2">2.</a> These can also be accessed and set programmatically in code.
-<a name="#3">3.</a> I say "like a graph" because I am not adhering to a strict graph data structure in this project. The tiles are stored in a 2D array, so even though they have a Dictionary collection of their neighboring tiles and relative positions, this is not what I am solely depending on to construct the maze.
+*Written with [StackEdit](https://stackedit.io/).*
+
+<a name="fn#1">1.</a> I'm going through this book, [Game Programming Patterns](https://gameprogrammingpatterns.com/) by Robert Nystrom, and it's changing my game programming life.
+
+<a name="fn#2">2.</a> These can also be accessed and set programmatically in code.
+
+<a name="fn#3">3.</a> I say "like a graph" because I am not adhering to a strict graph data structure in this project. The tiles are stored in a 2D array, so even though they have a Dictionary collection of their neighboring tiles and relative positions, this is not what I am solely depending on to construct the maze.
