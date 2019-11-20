@@ -2,6 +2,12 @@
 
 This is a game built to test and explore movement. Not a very creative name, I know, but it's still in process.
 
+Current progress:
+![](Gifs/movement_status_11-19-19.gif)
+
+Maze Generation:
+![](Gifs/maze_generation.gif)
+
 ## Features
 
 There are several features I want to explore here:
