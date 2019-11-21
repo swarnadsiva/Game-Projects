@@ -62,10 +62,9 @@ The player approaches a transparent, glowing platform with circle pads on each e
 <p><img src="Gifs/moving_platform_puzzle.gif" alt=""></p>
 <blockquote>
 <p>Gateway Orb Puzzle<br>
-Right at the end of the first level, a gateway reveals itself to transport to the next area. However, it can only be solved when all three orbs in the region have been collected (by solving puzzles and defeating enemies)<br>
-​<br>
-<img src="Gifs/orb_puzzle.gif" alt=""></p>
+Right at the end of the first level, a gateway reveals itself to transport to the next area. However, it can only be solved when all three orbs in the region have been collected (by solving puzzles and defeating enemies)</p>
 </blockquote>
+<p><img src="Gifs/orb_puzzle.gif" alt=""></p>
 <blockquote>
 <p>Written with <a href="https://stackedit.io/">StackEdit</a>.</p>
 </blockquote>
