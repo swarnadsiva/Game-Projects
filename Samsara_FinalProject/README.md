@@ -43,7 +43,7 @@
 <p>I had the privilege of working on several key components that made Samsara an exciting and immersive gameplay experience.</p>
 <h3 id="systems-design">Systems Design</h3>
 <p>There were many moving parts in Samsara that required solid software design in order to interact with each other properly without disruption. Puzzles, <abbr title="User Interface">UI</abbr> components, and cutscenes are just a few of the systems I implemented, but I also designed the underlying Game architecture that allowed all these “cogs” to work together. For example, if the player entered an area with a cutscene, I developed code to ensure player/enemy movement would be paused until the end or until the player skipped the scene.</p>
-<p><img src="Gifs/Guardian1_Trim.gif" alt=""></p>
+<p><img src="Gifs/guardian1_Trim.gif" alt=""></p>
 <h3 id="story-elements">Story Elements</h3>
 <p>Samsara’s rich narrative took shape in the form of elements throughout the game like completing objectives, collecting items, and an upgradable skill tree. These systems are visible as <abbr title="Heads Up Display, or the area where player's can see vital character stats like current health">HUD</abbr> elements as well as individual screens in the pause menu. See <strong><abbr title="User Interface">UI</abbr> Implementation</strong> below for visuals.</p>
 <h3 id="ui-implementation"><abbr title="User Interface">UI</abbr> Implementation</h3>
