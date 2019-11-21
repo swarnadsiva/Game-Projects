@@ -36,7 +36,7 @@
 <p>My team and I worked together to make two levels of a puzzle <abbr title="Role-Playing Game">RPG</abbr> with rich narrative, boss fights, and more. We had 8 weeks to design, implement and test our finished product before a final presentation to industry professionals.</p>
 <p>More information about our game, and individual roles can be found on our <a href="https://monomythstudios.wixsite.com/samsara">website</a>.</p>
 <blockquote>
-<p>Although I wasn’t directly responsible for the aesthetic of our game, I am still amazed by the work our designers and artist were able to achieve in such a short amout of time.</p>
+<p>Although I wasn’t directly responsible for the aesthetic of our game, I am still amazed by the work our designers and artist were able to achieve in such a short amount of time.</p>
 </blockquote>
 <p><img src="Gifs/game_beginning.gif" alt=""></p>
 <h2 id="game-features">Game Features</h2>
