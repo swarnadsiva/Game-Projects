@@ -1,8 +1,3 @@
----
-
-
----
-
 <h1 id="movement-a.k.a.-pajama-man-wandering-a-maze-with-a-rifle">Movement (A.K.A. Pajama Man Wandering a Maze With a Rifle)</h1>
 <dl>
 <dt>Developer</dt>
@@ -10,9 +5,9 @@
 <dt>Composer / Sound Designer</dt>
 <dd>Jake Kargl</dd>
 </dl>
-<p>I recently attended a game jam and met an awesome sound designer and composer (who just happens to be a grad student like me). We teamed up with some other devs, and while the game we made at the jam didn’t really pan out, we decided to make a game ourselves. I am basically in charge of everything except sound, so it’s heavy development.</p>
+<p>I recently attended a game jam and met an awesome sound designer and composer (who just happens to be a grad student like me). After the jam, we decided to work on a small project together to refine our game dev skills.</p>
 <blockquote>
-<p>This is my current progress:</p>
+<p>Current progress:</p>
 </blockquote>
 <p><img src="Gifs/movement_status_11-19-19.gif" alt=""></p>
 <p>As you can see, this game is still a-cookin’ and needs a lot of work to become a polished product. Although I would love to take credit for the amazing player character model and animations, they are actually from Unity 3D’s free <a href="https://learn.unity.com/project/survival-shooter-tutorial">Survival Shooter tutorial</a> asset package.</p>
